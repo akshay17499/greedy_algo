@@ -1,0 +1,90 @@
+#include<stdio.h>
+#include<stdlib.h>
+int max_non_merging_intervals(int**arr,int size)
+{
+    int finish = *arr[1];
+    int count=1;
+    for(int i=0;i<size;i++)
+    {
+       if(finish<=*(*(arr+i)))
+       {
+        finish = arr[i][1];
+        count++;
+       }
+    }
+   return count;
+}
+
+void merge(int**arr,int left,int mid,int right)
+{
+    int n1 = mid-left+1;
+    int n2 = right - mid;
+
+    int**L = malloc(sizeof(int*));
+    int**R = malloc(sizeof(int*));
+
+    for(int i=0;i<n1;i++)
+    L[i] = arr[i+left];
+    for(int i = 0;i<n2;i++)
+    R[i] = arr[i+mid+1];
+    
+    int i=0,j=0,k=left;
+
+    while(i<n1&&j<n2)
+    {
+        if(L[i][1]>R[j][1])
+        arr[k++] = R[j++];
+        else
+        arr[k++] = L[i++];
+    }
+    while(i<n1)
+    arr[k++] = L[i++];
+    while(j<n2)
+    arr[k++] = R[j++]; 
+
+}
+
+void merge_sort(int**arr,int left,int right)
+{
+    if(left<right)
+    {
+        int mid = (left+right)/2;
+        merge_sort(arr,left,mid);
+        merge_sort(arr,mid+1,right);
+        merge(arr,left,mid,right);
+    }
+}
+
+void display(int**arr,int size)
+{
+    for(int i=0;i<size;i++)
+    {
+        for(int j=0;j<2;j++)
+        {
+            printf("%d ",arr[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+int main()
+{
+    int size;
+    printf("enter number of intervals : ");
+    scanf("%d",&size);
+
+    int *arr[size];
+    for(int i=0;i<size;i++)
+    {
+        printf("enter intervals(starting : ending) : ");
+        arr[i] = malloc(sizeof(int)*2);
+        for(int j=0;j<2;j++)
+        {
+            scanf("%d",&arr[i][j]);
+        }
+    }
+    merge_sort(arr,0,size-1);
+    display(arr,size);
+    int count = max_non_merging_intervals(arr,size);
+    printf("no of non merging intervals  : %d",count);
+}
